@@ -1,0 +1,21 @@
+{
+  "name": "broke0000",
+  "dependencies":
+  {
+    "async": "3.2.5",
+    "detect-gpu": "5.0.38",
+    "gsap": "3.12.5",
+    "three": "0.162.0"
+    
+  },
+  "devDependencies":
+  {
+    "@types/bun": "1.0.8",
+    "chokidar": "3.6.0",
+    "html-minifier": "4.0.0"
+  },
+  "scripts":
+  {
+    "dev": "bun run ./_meta/dev.ts"
+  }
+}

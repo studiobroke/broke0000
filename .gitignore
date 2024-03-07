@@ -1,0 +1,6 @@
+# bun
+node_modules/
+bun.lockb
+
+# broke0000
+_build/
