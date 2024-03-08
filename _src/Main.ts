@@ -2,34 +2,20 @@
 ///// IMPORTS /////
 ///////////////////
 
-///// NPM
+// NPM
 import { series } from "async";
 import { gsap } from "gsap";
 
-///// LOCAL
+// LOCAL
 import { DOM } from "./_utils/DOM";
 
-///// JS ASSETS
-import sHTML from "./main.html";
-import sCSS from "./main.css";
-
-///// CSS ASSETS
+// CSS ASSETS
 // import font_0001_r from "./_assets/_fonts/font_0001_r.woff2";
-// import font_0002_r from "./_assets/_fonts/font_0002_r.woff2";
-// import font_0002_l from "./_assets/_fonts/font_0002_l.woff2";
-// import font_0003_li from "./_assets/_fonts/font_0003_li.woff2";
-// import font_0003_m from "./_assets/_fonts/font_0003_m.woff2";
-// import font_0003_i from "./_assets/_fonts/font_0003_i.woff2";
-// import font_0003_el from "./_assets/_fonts/font_0003_el.woff2";
-// import font_0003_eli from "./_assets/_fonts/font_0003_eli.woff2";
 
-///// COMPONENTS
-// import WebGL from "./_components/_webgl/WebGL.mjs";
-// import Header from "./_components/_header/Header.mjs";
-// import Acknowledgement from "./_components/_acknowledgement/Acknowledgement.mjs";
-// import Curriculumvitae from "./_components/_curriculumvitae/Curriculumvitae.mjs";
-// import Casestudy from "./_components/_casestudy/Casestudy.mjs";
-// import Footer from "./_components/_footer/Footer.mjs";
+// COMPONENTS
+// TODO: should we do this based on a routing component? only include what we need for this hard-refresh?
+// import Home from "./pages/home/Home";
+// import About from "./pages/about/About";
 
 /////////////////
 ///// CLASS /////
@@ -39,11 +25,15 @@ class Main extends HTMLElement
 {
 
   components = Object.create(null);
+  domShadowRoot = Object.create(null);
 
   constructor()
   {
     super();
     console.log("_main: constructor()");
+
+
+    
 
     const socket = new WebSocket("ws://localhost:" + DEBUG_PORT);
 
@@ -76,7 +66,7 @@ class Main extends HTMLElement
         // function(fCB) { this.loadFonts(fCB); }.bind(this),
         function(fCB) { this.createComponentInstances(fCB); }.bind(this),
         function(fCB) { this.createShadowDOM(fCB); }.bind(this),
-        // function(fCB) { this.populateShadowDOM(fCB); }.bind(this),
+        function(fCB) { this.populateShadowDOM(fCB); }.bind(this),
       ],
       function (err, results)
       {
@@ -108,27 +98,27 @@ class Main extends HTMLElement
       }
     );
 
-    if (sCSS !== "")
-    {
-      const domTemplateCSS = document.createElement("template");
-      domTemplateCSS.innerHTML = "<style>" + sCSS + "</style>";
+    // if (sCSS !== "")
+    // {
+    //   const domTemplateCSS = document.createElement("template");
+    //   domTemplateCSS.innerHTML = "<style>" + sCSS + "</style>";
 
-      this.domShadowRoot.appendChild
-      (
-        domTemplateCSS.content.cloneNode(true)
-      );
-    };
+    //   this.domShadowRoot.appendChild
+    //   (
+    //     domTemplateCSS.content.cloneNode(true)
+    //   );
+    // };
 
-    if (sHTML !== "")
-    {
-      const domTemplateHTML = document.createElement("template");
-      domTemplateHTML.innerHTML = sHTML;
+    // if (sHTML !== "")
+    // {
+    //   const domTemplateHTML = document.createElement("template");
+    //   domTemplateHTML.innerHTML = sHTML;
 
-      this.domShadowRoot.appendChild
-      (
-        domTemplateHTML.content.cloneNode(true)
-      );
-    }
+    //   this.domShadowRoot.appendChild
+    //   (
+    //     domTemplateHTML.content.cloneNode(true)
+    //   );
+    // }
 
     DOM.append(this, document.body);
 
@@ -174,9 +164,14 @@ class Main extends HTMLElement
 
   createComponentInstances(fCB)
   {
+    // TODO: should we do this based on a routing component? only include what we need for this hard-refresh?
+
     series
     (
       [
+        // function(fCB) { this.components._home = new Home(fCB); }.bind(this),\
+        // function(fCB) { this.components._about = new About(fCB); }.bind(this),
+
         // function(fCB) { this.components._webGL = new WebGL(fCB); }.bind(this),
         // function(fCB) { this.components._header = new Header(fCB); }.bind(this),
         // function(fCB) { this.components._acknowledgement = new Acknowledgement(fCB); }.bind(this),
@@ -197,6 +192,9 @@ class Main extends HTMLElement
 
   populateShadowDOM(fCB)
   {
+    // DOM.append(this.components._home, this.domShadowRoot);
+    // DOM.append(this.components._about, this.domShadowRoot);
+
     // DOM.append(this.components._webGL, this.domShadowRoot);
     // DOM.append(this.components._header, this.domShadowRoot);
     // DOM.append(this.components._acknowledgement, this.domShadowRoot);
@@ -206,6 +204,10 @@ class Main extends HTMLElement
     // DOM.append(this.components._footer, this.domShadowRoot);
 
     // DOM.append(this.components._webGL, this.domShadowRoot);
+
+    
+    // const domLink = DOM.create("a", { href: "/about" }, "helllllo");
+    // DOM.append(domLink, this.domShadowRoot);
 
     fCB();
   };
