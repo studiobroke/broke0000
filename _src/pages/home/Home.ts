@@ -2,17 +2,16 @@
 ///// IMPORTS /////
 ///////////////////
 
-///// NPM
+// NPM
 import { series } from "async";
 import { gsap } from "gsap";
 
-///// LOCAL
+// LOCAL
 import { DOM } from "./../../_utils/DOM";
 
-///// JS ASSETS
+// JS ASSETS
 import sHTML from "./Home.html";
 import sCSS from "./Home.css";
-
 
 /////////////////
 ///// CLASS /////
@@ -37,8 +36,7 @@ class Home extends HTMLElement
 
   __init()
   {
-    series
-    (
+    series(
       [
         function(fCB) { this.createComponentInstances(fCB); }.bind(this),
         function(fCB) { this.createShadowDOM(fCB); }.bind(this),
@@ -58,8 +56,7 @@ class Home extends HTMLElement
 
   createShadowDOM(fCB)
   {
-    this.domShadowRoot = this.attachShadow
-    (
+    this.domShadowRoot = this.attachShadow(
       {
         mode: "open"
       }
@@ -68,7 +65,7 @@ class Home extends HTMLElement
     if (sCSS !== "")
     {
       const domTemplateCSS = document.createElement("template");
-      domTemplateCSS.innerHTML = "<style>" + sCSS + "</style>";
+      domTemplateCSS.innerHTML = "<style>" + sCSS as string + "</style>";
 
       this.domShadowRoot.appendChild
       (
@@ -79,7 +76,7 @@ class Home extends HTMLElement
     if (sHTML !== "")
     {
       const domTemplateHTML = document.createElement("template");
-      domTemplateHTML.innerHTML = sHTML;
+      domTemplateHTML.innerHTML = sHTML as string;
 
       this.domShadowRoot.appendChild
       (
@@ -94,8 +91,7 @@ class Home extends HTMLElement
 
   createComponentInstances(fCB)
   {
-    series
-    (
+    series(
       [],
       function (err, results)
       {
@@ -117,7 +113,6 @@ class Home extends HTMLElement
 ////////////////////////////////////
 
 customElements.define('broke0000-home', Home);
-
 
 /////////////////////////
 ///// INSTANTIATION /////
