@@ -16,10 +16,12 @@ import * as htmlminifier from "html-minifier";
 
 // global to access it from the watcher script
 let _bunServer;
-let buildId;
+
 
 class Builder
 {
+  buildId;
+
   constructor()
   {
     this.build(); // once
@@ -28,7 +30,7 @@ class Builder
 
   build()
   {
-    buildId = crypto.randomUUID();
+    this.buildId = crypto.randomUUID();
 
     this.clean();
     this.copy();
@@ -51,18 +53,36 @@ class Builder
 
   copy()
   {
-    fs.cpSync("./_src/index.html", "./_build/index.html");
-    fs.cpSync("./_src/about/index.html", "./_build/about/index.html");
+    // TODO: abstract into a "page builder" step
+
+    fs.cpSync("./_src/pages/_templates/index.html", "./_build/index.html");
+    fs.cpSync("./_src/pages/_templates/index.html", "./_build/about/index.html");
   };
 
   buildHTML(filePath: string)
   {
-    const sIndexTemplate = fs.readFileSync(filePath,
+    let sIndexTemplate = fs.readFileSync(filePath,
       {
         encoding: "utf8",
         flag: "r",
       }
     );
+
+    // rewrite paths based on buildId
+    let oRegExp = new RegExp("<insert main component>", "g");
+    sIndexTemplate = sIndexTemplate.replace(oRegExp, "Main_" + this.buildId +".js");
+    
+   
+    // TODO : refactor
+    oRegExp = new RegExp("<insert page component>", "g");
+    if (filePath === "./_build/index.html")
+    {
+      sIndexTemplate = sIndexTemplate.replace(oRegExp, "/pages/home/Home_" + this.buildId +".js");
+    }
+    else if (filePath === "./_build/about/index.html")
+    {
+      sIndexTemplate = sIndexTemplate.replace(oRegExp, "/pages/about/About_" + this.buildId +".js");
+    };
 
     const sMinifiedIndexTemplate = htmlminifier.minify(sIndexTemplate,
       {
@@ -83,17 +103,17 @@ class Builder
 
   async buildJS()
   {
-    console.log("Builder : build started");
+    console.log("Builder : build started : id = " + this.buildId);
 
     const { success, logs } = await Bun.build(
       {
-        entrypoints: ["./_src/main.ts"],
+        entrypoints: ["./_src/Main.ts", "./_src/pages/home/Home.ts", "./_src/pages/about/About.ts"],
         // external: ["gsap", "three"],
         // plugins: [],
         outdir: "./_build",
         naming: {
-          entry: "[dir]/[name].[ext]",
-          // entry: "[dir]/[name]_" + buildId + ".[ext]",
+          // entry: "[dir]/[name].[ext]",
+          entry: "[dir]/[name]_" + this.buildId + ".[ext]",
           asset: "[dir]/[name].[ext]"//,
           // chunk: "[dir]/[name].[ext]"
         },
@@ -110,7 +130,7 @@ class Builder
         define:
         {
           DEBUG_PORT: "\"" + 8000 + "\"",
-          BUILD_ID: "\"" + buildId + "\""
+          BUILD_ID: "\"" + this.buildId + "\""
         },
         loader:
         {
