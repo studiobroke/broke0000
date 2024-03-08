@@ -17,7 +17,6 @@ import * as htmlminifier from "html-minifier";
 // global to access it from the watcher script
 let _bunServer;
 
-
 class Builder
 {
   buildId;
@@ -53,10 +52,14 @@ class Builder
 
   copy()
   {
-    // TODO: abstract into a "page builder" step
-
+    // TODO?: abstract into a "page builder" step
     fs.cpSync("./_src/pages/_templates/index.html", "./_build/index.html");
     fs.cpSync("./_src/pages/_templates/index.html", "./_build/about/index.html");
+
+    // TODO: incorporate buildid in the file naming
+    // move assets
+    // ref: https://github.com/pmndrs/detect-gpu/tree/master/benchmarks (2024.02.01)
+    fs.cpSync("./_src/_assets/_benchmarks/", "./_build/_assets/_benchmarks/", { recursive: true });
   };
 
   buildHTML(filePath: string)
@@ -139,10 +142,8 @@ class Builder
       }
     );
 
-    console.log(success ? 'build succeeded' : 'build failed: ' + logs.join('\n'));
+    console.log(success ? "Builder : build done" : "build failed: " + logs.join('\n'));
     if (logs.length > 0) console.log(logs);
-
-    console.log("Builder : build done");
   };
 
   postBuild()
@@ -158,8 +159,6 @@ class Builder
         usePolling: false,
       }
     );
-
-    console.log("_builder: watcher: watching");
 
     watcher.on('all', function()
       {
@@ -214,6 +213,10 @@ class HttpServer
           {
             return new Response(Bun.file(publicFilePath), { status: status, headers: { "Content-Type": "text/javascript" } });
           }
+          else if(ext === ".json")
+          {
+            return new Response(Bun.file(publicFilePath), { status: status, headers: { "Content-Type": "application/json" } });
+          }
           else if(ext === ".jpg")
           {
             return new Response(Bun.file(publicFilePath), { status: status, headers: { "Content-Type": "image/jpeg" } });
@@ -250,5 +253,3 @@ class HttpServer
 
 const _builder = new Builder();
 const _httpServer = new HttpServer("8000");
-
-console.log("running");
