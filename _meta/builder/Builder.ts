@@ -6,7 +6,7 @@
 // https://github.com/wayfolk/everything/tree/main/wayf0000/_development/_web/_codebase/_projects/theu0000/_src
 // https://github.com/wayfolk/everything/blob/main/common/_development/_web/_builder/Builder.mjs
 
-// NODE
+// BUN
 import fs from "node:fs";
 import path from "node:path";
 
@@ -21,10 +21,10 @@ class Builder
 {
   buildId;
 
-  constructor()
+  constructor(bWatching = false)
   {
-    this.build(); // once
-    this.watch(); // now watch
+    this.build();
+    if (bWatching) this.watch();
   }
 
   build()
@@ -114,11 +114,10 @@ class Builder
         // external: ["gsap", "three"],
         // plugins: [],
         outdir: "./_build",
-        naming: {
-          // entry: "[dir]/[name].[ext]",
+        naming:
+        {
           entry: "[dir]/[name]_" + this.buildId + ".[ext]",
-          asset: "[dir]/[name].[ext]"//,
-          // chunk: "[dir]/[name].[ext]"
+          asset: "[dir]/[name].[ext]"
         },
         format: "esm",
         target: "browser",
@@ -197,30 +196,12 @@ class HttpServer
           const ext = path.extname(publicFilePath);
           const status = 200;
 
-          if (url.pathname === "/")
-          {
-            return new Response(Bun.file(this._publicPath + "index.html"), { status: status, headers: { "Content-Type": "text/html; charset=utf-8" } });
-          }
-          else if (url.pathname === "/about")
-          {
-            return new Response(Bun.file(this._publicPath + "/about/index.html"), { status: status, headers: { "Content-Type": "text/html; charset=utf-8" } });
-          }
-          else if(ext === ".js")
-          {
-            return new Response(Bun.file(publicFilePath), { status: status, headers: { "Content-Type": "text/javascript" } });
-          }
-          else if(ext === ".map")
-          {
-            return new Response(Bun.file(publicFilePath), { status: status, headers: { "Content-Type": "text/javascript" } });
-          }
-          else if(ext === ".json")
-          {
-            return new Response(Bun.file(publicFilePath), { status: status, headers: { "Content-Type": "application/json" } });
-          }
-          else if(ext === ".jpg")
-          {
-            return new Response(Bun.file(publicFilePath), { status: status, headers: { "Content-Type": "image/jpeg" } });
-          }
+          if (url.pathname === "/") return new Response(Bun.file(this._publicPath + "index.html"), { status: status, headers: { "Content-Type": "text/html; charset=utf-8" } });
+          else if (url.pathname === "/about") return new Response(Bun.file(this._publicPath + "/about/index.html"), { status: status, headers: { "Content-Type": "text/html; charset=utf-8" } });
+          else if(ext === ".js") return new Response(Bun.file(publicFilePath), { status: status, headers: { "Content-Type": "text/javascript" } });
+          else if(ext === ".map") return new Response(Bun.file(publicFilePath), { status: status, headers: { "Content-Type": "text/javascript" } });
+          else if(ext === ".json") return new Response(Bun.file(publicFilePath), { status: status, headers: { "Content-Type": "application/json" } });
+          else if(ext === ".jpg") return new Response(Bun.file(publicFilePath), { status: status, headers: { "Content-Type": "image/jpeg" } });
 
         }.bind(this),
         websocket:
@@ -228,15 +209,11 @@ class HttpServer
           // handler called when a message is received
           message: function(ws, message)
           {
-            console.log(`Received: ${message}`);
+            // console.log(`Received: ${message}`);
+
             ws.subscribe("the-group-chat");
             _bunServer.publish("the-group-chat", "ping");
-            // ws.send("ola")
-            // const user = getUserFromToken(ws.data.authToken);
-            // await db.Message.insert({
-              // message: String(message),
-              // userId: user.id,
-            // });
+
           }.bind(this),
         },
         // Bun prefers a global error handler here, as fs checks for a file to exist will slow things down.
@@ -251,5 +228,16 @@ class HttpServer
   };
 };
 
-const _builder = new Builder();
-const _httpServer = new HttpServer("8000");
+///////////////////////
+///// INSTANTIATE /////
+///////////////////////
+
+if (Bun.argv[2] === '--dev')
+{
+  const _builder = new Builder(true);
+  const _httpServer = new HttpServer("8000");
+}
+else if (Bun.argv[2] === '--build')
+{
+  const _builder = new Builder(false);
+};

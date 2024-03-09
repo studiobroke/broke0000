@@ -16,6 +16,7 @@
   },
   "scripts":
   {
-    "dev": "bun run ./_meta/dev.ts"
+    "build": "bun run ./_meta/builder/Builder.ts --build",
+    "dev": "bun run ./_meta/builder/Builder.ts --dev"
   }
 }

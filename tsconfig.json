@@ -1,6 +1,7 @@
 {
-  "compilerOptions": {
-    "types": ["bun-types"], // provides type hinting
-    "esModuleInterop": true, // allows for import statements
+  "compilerOptions":
+  {
+    "types": ["bun-types"],
+    "esModuleInterop": true,
   }
 }
