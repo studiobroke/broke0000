@@ -4,7 +4,6 @@
 
 // NPM
 import { series } from "async";
-import { gsap } from "gsap";
 
 // LOCAL
 import { ENV } from "./_utils/ENV";
@@ -34,11 +33,9 @@ class Main extends HTMLElement
 
     // Listen for messages
     socket.addEventListener("message", (event) => {
-      console.log("Message from server ", event.data);
-
+      // console.log("Message from server ", event.data);
       if (event.data === "boom! new build ready.") window.location.reload();
     });
-
 
     this.__init();
   };
@@ -59,16 +56,6 @@ class Main extends HTMLElement
         console.log("TODO: we need to wait for this:");
         console.log("_main: __init: done");
         console.log(ENV.getGPU());
-        
-        // TODO?: refac this?
-        // Handle the color of the body here instead of CSS, so we don't get a flash on first paint.
-        // The delay prevents an ugly blend with the component .intro() animations.
-        gsap.fromTo
-        (
-          document.body,
-          { backgroundColor: "rgb(0, 0, 0)"}, // start from here to avoid an ungly transition using just gsap.to
-          { backgroundColor: "rgb(253, 245, 229)", duration: .900, delay: 0.0, ease: "none" },
-        );
 
       }.bind(this)
     );
